@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Data / corpora
+*.parquet
+*.jsonl
+
+# Search indexes
+*.index
+
+# Generated embeddings / model artifacts
+*.npy
+*.pt
+*.pth
+
+# Runtime tagging state
+user_tags.csv
+user_tag_assignments.csv
+tag_canonicalization_events.csv
+tag_cooccurrence_edges.csv
+used_tag_nodes.csv
+used_tag_edges.csv
+used_tag_edges_index.csv
+gnn_tag_predictions.csv
+
+# Generated KG / controlled-vocabulary artifacts
+kg_nodes.csv
+kg_edges.csv
+kg_edges_index.csv
+kg_prop_edges.csv
+tags_vocab_embeddings.npy
+tags_vocab_index.csv
+
+# Backups
+*_backup*
+*.bak
