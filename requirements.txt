@@ -1,0 +1,11 @@
+faiss-cpu
+Flask
+networkx
+numpy
+pandas
+plotly
+requests
+scikit-learn
+sentence-transformers
+streamlit
+torch
