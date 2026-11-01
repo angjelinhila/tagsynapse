@@ -5,65 +5,32 @@
 TagSynapse is a collaborative knowledge-organization system that bridges **folksonomic tagging** and **formal 
 ontologies**.
 
-Folksonomies preserve the language and distinctions that emerge from users. Controlled vocabularies provide consistency, 
-hierarchy, and navigability. TagSynapse treats these as complementary layers rather than forcing one to replace the 
-other.
+Folksonomies preserve the language and conceptual distinctions that emerge from users. Controlled vocabularies provide 
+consistency, hierarchy, and navigability. TagSynapse treats these as complementary layers rather than forcing one to 
+replace the other.
 
 Its central design principle is:
 
 > **Structure without vocabulary homogenization.**
 
-User-generated tags remain first-class knowledge objects while semantic models, typed relations, graph structure, and 
-learned recommendations connect them to a controlled vocabulary.
+User-generated tags remain first-class knowledge objects while semantic models, typed relations, graph structure, usage 
+evidence, and learned recommendations connect them to a controlled vocabulary.
 
 ---
 
-## 2. System Model
-
-Let
-
-\[
-\mathcal C_t
-\]
-
-denote the controlled vocabulary at time \(t\), and
-
-\[
-\mathcal F_t
-\]
-
-the folksonomic vocabulary generated through use.
-
-The Tag Knowledge Graph is
-
-\[
-\mathcal G_t=(V_t,E_t,\mathcal R)
-\]
-
-with
-
-\[
-V_t=\mathcal C_t\cup\mathcal F_t.
-\]
-
-Controlled and folksonomic concepts therefore coexist in the same graph while retaining distinct provenance.
-
----
-
-## 3. Architecture
+## 2. System Architecture
 
 ```mermaid
 flowchart LR
-
     U["User Tag"]
     S["Semantic Matching"]
     C["FAST Controlled Vocabulary"]
-    R["Relation Inference<br/>equivalent · broader · narrower · associated"]
+    R["Relation Inference"]
     KG["Tag Knowledge Graph"]
     GNN["Tag GNN"]
     REC["Tag Recommendations"]
     H["Human Tagging"]
-    USE["Usage Evidence<br/>new tags · co-use · assignments"]
+    USE["Usage Evidence"]
 
     U --> S
     C --> S
@@ -76,70 +43,125 @@ flowchart LR
     USE --> KG
 ```
 
-The system separates five forms of intelligence:
+The architecture separates five forms of system intelligence:
 
-1. semantic retrieval;
-2. relation inference;
-3. graph structural inference;
-4. collaborative usage evidence;
-5. human validation.
-
-No single component is expected to perform all five.
+1. **semantic retrieval** — identifies plausible concepts;
+2. **relation inference** — determines how concepts are related;
+3. **graph structural inference** — uses relational context;
+4. **usage evidence** — learns from collaborative tagging behavior;
+5. **human validation** — determines final annotations and uncertain graph updates.
 
 ---
 
-## 4. Semantic Candidate Generation
+## 3. Core Representation
 
-Dense representations identify plausible concepts.
+Let:
 
-For input \(x\) and controlled concept \(c\),
+- $\mathcal{C}_t$ denote the controlled vocabulary at time $t$;
+- $\mathcal{F}_t$ denote the folksonomic vocabulary generated through use.
 
-\[
+The Tag Knowledge Graph is:
+
+$$
+\mathcal{G}_t = (V_t, E_t, \mathcal{R})
+$$
+
+with:
+
+$$
+V_t = \mathcal{C}_t \cup \mathcal{F}_t
+$$
+
+Controlled and folksonomic concepts therefore coexist within the same graph while retaining distinct provenance.
+
+A folksonomic tag does not need to become a controlled concept in order to participate in the graph.
+
+---
+
+## 4. Relation Model
+
+TagSynapse distinguishes between **ontological relations** and **empirical relations**.
+
+### Ontological relations
+
+These describe conceptual organization:
+
+```text
+broader
+narrower
+equivalent
+associated
+```
+
+### Empirical relations
+
+These describe observed collaborative behavior:
+
+```text
+coUsedWith
+usedFor
+createdBy
+```
+
+This distinction is deliberate.
+
+A pair of tags may frequently co-occur without one being ontologically broader, narrower, or formally associated with the 
+other.
+
+---
+
+## 5. Semantic Candidate Generation
+
+Dense semantic representations are used to identify plausible candidate concepts.
+
+For input $x$ and concept $c$:
+
+$$
 s_{\mathrm{sem}}(x,c)
 =
-\cos(\mathbf x_x,\mathbf x_c)
-\]
+\cos(\mathbf{x}_x,\mathbf{x}_c)
+$$
 
-and candidate retrieval is
+The top-$k$ semantic candidate set is:
 
-\[
+$$
 C_{\mathrm{sem}}^{(k)}(x)
 =
-\operatorname{TopK}_{c\in\mathcal C_t}
-s_{\mathrm{sem}}(x,c).
-\]
+\operatorname{TopK}_{c \in \mathcal{C}_t}
+s_{\mathrm{sem}}(x,c)
+$$
 
-This stage answers:
+Semantic retrieval therefore answers:
 
-> **Where should the system look?**
+> **Which concepts should the system consider?**
 
-It does not determine whether two concepts are equivalent, hierarchical, or merely associated.
+It does not determine hierarchy or equivalence.
 
-The distinction is fundamental:
+In particular:
 
-\[
-\cos(\mathbf x_a,\mathbf x_b)
+$$
+\cos(\mathbf{x}_a,\mathbf{x}_b)
 \not\Rightarrow
-a\prec b
-\]
+a \prec b
+$$
 
-and
+and:
 
-\[
-\cos(\mathbf x_a,\mathbf x_b)
+$$
+\cos(\mathbf{x}_a,\mathbf{x}_b)
 \not\Rightarrow
-a\equiv b.
-\]
+a \equiv b
+$$
 
-Semantic similarity generates candidates. Relation inference determines conceptual structure.
+Semantic similarity generates candidates. Relational inference determines conceptual structure.
 
 ---
 
-## 5. Tag Recommendation
+## 6. Tag Recommendation
 
-For information object \(d\), TagSynapse can assemble recommendations from
+For information object $d$, TagSynapse can draw recommendations from three sources:
 
-\[
+$$
 C(d)
 =
 C_{\mathrm{sem}}(d)
@@ -147,78 +169,33 @@ C_{\mathrm{sem}}(d)
 C_{\mathrm{graph}}(d)
 \cup
 C_{\mathrm{folk}}(d)
-\]
+$$
 
 where:
 
-- \(C_{\mathrm{sem}}\) contains semantically retrieved controlled concepts;
-- \(C_{\mathrm{graph}}\) contains graph-mediated recommendations;
-- \(C_{\mathrm{folk}}\) contains previously established folksonomic tags.
+- $C_{\mathrm{sem}}$ contains semantically retrieved controlled concepts;
+- $C_{\mathrm{graph}}$ contains graph-mediated recommendations;
+- $C_{\mathrm{folk}}$ contains previously established folksonomic tags.
 
-The human selects
+The user selects:
 
-\[
+$$
 T_d
 \subseteq
-C(d)\cup T_{\mathrm{new}}
-\]
+C(d) \cup T_{\mathrm{new}}
+$$
 
-where \(T_{\mathrm{new}}\) contains freely created tags.
+where $T_{\mathrm{new}}$ contains freely created tags.
 
-The human therefore remains the final annotation authority.
-
----
-
-## 6. Relation Model
-
-TagSynapse distinguishes **ontological relations** from **empirical relations**.
-
-### Ontological relations
-
-\[
-\mathcal R_{\mathrm{ont}}
-=
-\{
-\texttt{broader},
-\texttt{narrower},
-\texttt{equivalent},
-\texttt{associated}
-\}
-\]
-
-These describe conceptual organization.
-
-### Empirical relations
-
-\[
-\mathcal R_{\mathrm{emp}}
-=
-\{
-\texttt{coUsedWith},
-\texttt{usedFor},
-\texttt{createdBy}
-\}
-\]
-
-These describe observed collaborative behavior.
-
-Thus
-
-\[
-\texttt{coUsedWith}
-\neq
-\texttt{associated}.
-\]
-
-Behavioral association can provide evidence about conceptual structure without itself becoming an ontological assertion.
+Human tagging remains the final annotation authority.
 
 ---
 
 ## 7. Folksonomy–Ontology Bridge
 
-A new user-generated tag need not be immediately absorbed into the controlled vocabulary.
+A new user-generated tag is not restricted to a binary choice between acceptance into the ontology and rejection.
 
-A candidate may become:
+A tag may function as:
 
 ```text
 existing concept
@@ -227,114 +204,106 @@ folksonomic tag
 new controlled concept
 ```
 
-This permits novel vocabulary to persist while evidence accumulates.
+This allows novel vocabulary to remain useful while evidence about its meaning, usage, and graph position accumulates.
 
-The system can therefore preserve emergent terminology before deciding whether it should alter the formal ontology.
+The system therefore treats folksonomic persistence as a legitimate state rather than an error condition.
 
 ---
 
-## 8. Usage Evidence
+## 8. Usage-Enriched Structure
 
-Each accepted tag assignment contributes empirical evidence.
+Each accepted tag assignment contributes evidence about how the vocabulary is actually used.
 
-For tag \(t\) and document \(d\),
+For tag $t$ and document $d$:
 
-\[
+$$
 Y_{dt}
 =
 \begin{cases}
-1 & \text{if tag }t\text{ is assigned to }d\\
+1 & \text{if tag } t \text{ is assigned to } d \\
 0 & \text{otherwise}
 \end{cases}
-\]
+$$
 
-Co-use count is
+Tag co-use count is:
 
-\[
+$$
 N_{ij}
 =
-\sum_dY_{di}Y_{dj}.
-\]
+\sum_d Y_{di}Y_{dj}
+$$
 
-Such observations can generate empirical graph edges and later support richer measures such as normalized co-use, 
-behavioral subsumption, persistence, and stabilization.
+These observations can generate empirical graph edges and support measures of:
+
+- reuse;
+- co-occurrence;
+- persistence;
+- semantic coherence;
+- structural centrality;
+- bridging between graph regions.
 
 ---
 
 ## 9. Graph Learning
 
-Each tag begins with a semantic representation:
+Each tag begins with a semantic representation $\mathbf{x}_v$.
 
-\[
-\mathbf h_v^{(0)}
-=
-\mathbf x_v.
-\]
+The GNN transforms these into graph-conditioned representations:
 
-Graph propagation produces a structure-aware representation:
-
-\[
-\mathbf h_v
+$$
+\mathbf{h}_v
 =
 \operatorname{GNN}
-\left(
-\mathbf x_v,\mathcal G_t
-\right).
-\]
+(
+\mathbf{x}_v,
+\mathcal{G}_t
+)
+$$
 
 The distinction is:
 
-\[
-\mathbf x_v
-\]
+- $\mathbf{x}_v$ captures textual semantics;
+- $\mathbf{h}_v$ captures textual semantics conditioned on graph structure.
 
-captures textual semantics, while
-
-\[
-\mathbf h_v
-\]
-
-captures textual semantics conditioned on relational graph context.
-
-Graph-mediated recommendations can therefore surface candidates not recoverable from embedding proximity alone.
+This allows graph-mediated recommendation to surface relationships that embedding similarity alone may not reveal.
 
 ---
 
 ## 10. Graph Evolution
 
-Validated interactions update the graph:
+Validated tagging activity updates the graph:
 
-\[
-\mathcal G_{t+1}
+$$
+\mathcal{G}_{t+1}
 =
-\mathcal G_t
+\mathcal{G}_t
 +
-\Delta\mathcal G_t.
-\]
+\Delta\mathcal{G}_t
+$$
 
 The central feedback loop is:
 
-\[
-\boxed{
-\mathcal G_t
-\rightarrow
-\text{recommendations}
-\rightarrow
-\text{human tagging}
-\rightarrow
-\text{validated knowledge}
-\rightarrow
-\mathcal G_{t+1}
-}
-\]
+```text
+Tag Knowledge Graph
+        ↓
+Recommendations
+        ↓
+Human Tagging
+        ↓
+Validated Usage and Relations
+        ↓
+Updated Tag Knowledge Graph
+```
 
-Users organize information through the graph, and their organization of information changes the graph.
+Conceptually:
+
+> **Users organize information through the graph, and their organization of information changes the graph.**
 
 ---
 
 ## 11. Retrieval
 
-TagSynapse complements the existing search architecture rather than replacing it.
+TagSynapse complements the underlying search system rather than replacing it.
 
 The interface supports:
 
@@ -343,9 +312,10 @@ The interface supports:
 - BM25;
 - Boolean retrieval;
 - hybrid retrieval;
-- tag- and graph-assisted browsing.
+- tag-assisted browsing;
+- graph-mediated retrieval.
 
-The dense index uses:
+The dense retrieval index uses:
 
 ```text
 sentence-transformers/all-MiniLM-L6-v2
@@ -354,45 +324,45 @@ FAISS IndexFlatIP
 L2-normalized cosine retrieval
 ```
 
-Graph structure adds a second retrieval path through controlled concepts, folksonomic tags, hierarchical relations, and 
+Graph structure adds a relational retrieval layer through controlled concepts, folksonomic tags, hierarchical links, and 
 learned associations.
 
 ---
 
 ## 12. Implementation Pipeline
 
-### Retrieval
+### Retrieval pipeline
 
 ```text
-filtered information objects
+Filtered information objects
         ↓
 MiniLM embeddings
         ↓
 FAISS index
         ↓
-retrieval service
+FAISS service
         ↓
 Streamlit interface
 ```
 
-### Tag Knowledge Graph
+### Tagging pipeline
 
 ```text
 FAST controlled vocabulary
         ↓
-controlled-tag embeddings
+Controlled-tag embeddings
         ↓
-base Tag Knowledge Graph
+Base Tag Knowledge Graph
         +
-user tags
+User tags
         +
-tag assignments
+Tag assignments
         ↓
-usage-enriched graph
+Usage-enriched graph
         ↓
 Tag GNN
         ↓
-recommendations
+Tag recommendations
 ```
 
 Primary source files:
@@ -414,39 +384,32 @@ tagging/
 
 ---
 
-## 13. Research Design
+## 13. Experimental Model
 
-TagSynapse supports three assistance conditions:
+TagSynapse supports three principal assistance conditions.
 
-\[
-M_0
-=
-\text{manual tagging}
-\]
+### Manual tagging
 
-\[
-M_1
-=
-M_0
-+
-C_{\mathrm{sem}}
-\]
+$$
+M_0 = \text{manual tagging}
+$$
 
-\[
-M_2
-=
-M_1
-+
-C_{\mathrm{graph}}
-\]
+### Semantic mediation
 
-corresponding to:
+$$
+M_1 = M_0 + C_{\mathrm{sem}}
+$$
 
-1. manual tagging;
-2. embedding-based semantic recommendation;
-3. embedding + TKG/GNN-based recommendation.
+### Structural-semantic recommendation
 
-This separates the value of semantic mediation from the additional contribution of graph structure.
+$$
+M_2 = M_1 + C_{\mathrm{graph}}
+$$
+
+This isolates:
+
+- the contribution of semantic recommendation;
+- the additional contribution of graph-mediated recommendation.
 
 Evaluation can examine:
 
@@ -454,17 +417,15 @@ Evaluation can examine:
 - custom tag creation;
 - semantic alignment;
 - vocabulary growth;
-- new graph relations;
-- usefulness;
+- graph evolution;
+- perceived usefulness;
 - trust;
-- perceived control;
-- retrieval precision and recall;
-- ranking quality;
-- semantic relevance.
+- user control;
+- retrieval quality.
 
 ---
 
-## 14. Core Design Principle
+## 14. Guiding Principle
 
 TagSynapse is built around a simple proposition:
 
@@ -476,8 +437,9 @@ Folksonomic tags preserve emergent language.
 
 Semantic models connect nearby concepts.
 
-Graph structure captures relational context.
+Graph structure provides relational context.
 
 Collaborative use changes the graph.
 
-Together, these provide a path toward adaptive, human-in-the-loop knowledge organization.
+Together, these layers support adaptive, human-in-the-loop knowledge organization.
+
