@@ -13,7 +13,7 @@ Construct a tag-centric Knowledge Graph from:
       user_tags.csv
       user_tag_assignments.csv
 
-Outputs (written to faiss/tagging/):
+Outputs (written to config.TAG_DATA_DIR, default faiss/tagging/):
 
   - kg_nodes.csv:
         node_id (int)
@@ -44,18 +44,22 @@ This is intended as the backing KG for TagSynapse + later GNNs.
 import argparse
 from pathlib import Path
 from typing import Dict, Tuple, List, Optional
+import sys
 
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root -> `tagsynapse` importable
+from tagsynapse import config
 
 
 # --------------------------------------------------------------------
 # CONFIG
 # --------------------------------------------------------------------
 
-BASE_DIR = Path(__file__).resolve().parent
-TAG_DATA_DIR = BASE_DIR / "faiss" / "tagging"
+# All paths come from tagsynapse/config.py (TAGSYNAPSE_DATA_DIR overrides).
+TAG_DATA_DIR = config.TAG_DATA_DIR
 
 CONTROL_VOCAB_PATH = TAG_DATA_DIR / "tags_vocab_cat.csv"
 CONTROL_EMBED_PATH = TAG_DATA_DIR / "tags_vocab_embeddings.npy"

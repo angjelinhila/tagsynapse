@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" width="900" height="300" role="img" aria-label="The central feedback loop: the graph at time t produces recommendations, humans tag, validated knowledge and usage evidence update the graph to time t+1">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker>
+  <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#34d399"/></marker>
+  <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#f59e0b"/></marker></defs>
+  <style>.t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.n{font-size:16px;font-weight:700;fill:#f8fafc}.s{font-size:12px;fill:#cbd5e1}.e{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#a)}</style>
+  <rect width="900" height="300" rx="18" fill="#0f172a"/>
+  <g transform="translate(40,110)"><rect width="150" height="80" rx="40" fill="#1e293b" stroke="#7dd3fc" stroke-width="2"/>
+    <text class="t n" x="75" y="36" text-anchor="middle" font-style="italic">G(t)</text><text class="t s" x="75" y="58" text-anchor="middle">tag knowledge graph</text></g>
+  <g transform="translate(250,110)"><rect width="170" height="80" rx="14" fill="#1e1b4b" stroke="#a78bfa" stroke-width="1.5"/>
+    <text class="t n" x="85" y="36" text-anchor="middle">Recommendations</text><text class="t s" x="85" y="58" text-anchor="middle">semantic ∪ graph ∪ folk</text></g>
+  <g transform="translate(480,110)"><rect width="170" height="80" rx="14" fill="#042f2e" stroke="#34d399" stroke-width="2"/>
+    <text class="t n" x="85" y="36" text-anchor="middle">Human tagging</text><text class="t s" x="85" y="58" text-anchor="middle">T(d) = H(d, C(d))</text></g>
+  <g transform="translate(710,110)"><rect width="150" height="80" rx="40" fill="#1e293b" stroke="#7dd3fc" stroke-width="2"/>
+    <text class="t n" x="75" y="36" text-anchor="middle" font-style="italic">G(t+1)</text><text class="t s" x="75" y="58" text-anchor="middle">= G(t) + ΔG(t)</text></g>
+  <path class="e" d="M190 150 L250 150"/><path class="e" d="M420 150 L480 150"/>
+  <path d="M650 150 L710 150" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text class="t s" x="680" y="138" text-anchor="middle" fill="#6ee7b7">validated</text>
+  <path d="M565 190 C 565 250, 785 250, 785 190" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="7 5" marker-end="url(#aa)"/>
+  <text class="t s" x="675" y="262" text-anchor="middle" fill="#fbbf24">usage evidence · coUsedWith · B(x,y)</text>
+  <path d="M785 110 C 785 40, 115 40, 115 110" stroke="#475569" stroke-width="2" fill="none" stroke-dasharray="3 5" marker-end="url(#a)"/>
+  <text class="t s" x="450" y="36" text-anchor="middle" fill="#94a3b8">users organize information through the graph — and their organization changes the graph</text>
+</svg>

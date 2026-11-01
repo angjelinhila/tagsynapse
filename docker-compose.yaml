@@ -1,27 +1,14 @@
-version: "3.8"
-
 services:
- # elasticsearch:
-   # image: docker.elastic.co/elasticsearch/elasticsearch:8.5.1
-   # container_name: elasticsearch
-   # environment:
-   #   - discovery.type=single-node
-   #   - xpack.security.enabled=false
-   # ports:
-   #   - "9200:9200"
-   # volumes:
-   #   - es_data:/usr/share/elasticsearch/data
-
   faiss-service:
-    build: ./faiss
-    container_name: faiss_service
+    build:
+      context: ./retrieval
+      dockerfile: ../docker/faiss.Dockerfile
+    container_name: tagsynapse_faiss
+    environment:
+      - TAGSYNAPSE_FAISS_INDEX_PATH=${TAGSYNAPSE_FAISS_INDEX_PATH:-/mnt/faiss_index/artificial_filtered_output_faiss.index}
     volumes:
-      - "./faiss/index:/mnt/faiss_index:ro"
+      # Host side follows TAGSYNAPSE_DATA_DIR (default ./faiss); container side is fixed.
+      - "${TAGSYNAPSE_DATA_DIR:-./faiss}/index:/mnt/faiss_index:ro"
     ports:
       - "5000:5000"
     restart: unless-stopped
-   # depends_on:
-   #   - elasticsearch
-
-volumes:
-  es_data:

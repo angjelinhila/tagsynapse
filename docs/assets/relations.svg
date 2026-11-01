@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 230" width="900" height="230" role="img" aria-label="Two relation classes kept distinct: ontological (broader, narrower, equivalent, associated) and empirical (coUsedWith, usedFor, createdBy)">
+  <style>.t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.h{font-size:15px;font-weight:800;letter-spacing:0.8px}.r{font-size:14px;font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.d{font-size:12.5px}</style>
+  <rect width="900" height="230" rx="18" fill="#0f172a"/>
+  <g transform="translate(30,28)">
+    <rect width="400" height="174" rx="14" fill="#38bdf8" fill-opacity="0.08" stroke="#38bdf8" stroke-width="1.5"/>
+    <text class="t h" x="20" y="30" fill="#7dd3fc">R<tspan font-size="11" dy="4">ont</tspan><tspan dy="-4"> · ONTOLOGICAL</tspan></text>
+    <text class="t d" x="20" y="52" fill="#cbd5e1">asserted by the vocabulary or validated by a human</text>
+    <g class="t r" fill="#e0f2fe">
+      <rect x="20" y="70" width="90" height="28" rx="14" fill="#38bdf8" fill-opacity="0.2"/><text x="65" y="89" text-anchor="middle">broader</text>
+      <rect x="120" y="70" width="98" height="28" rx="14" fill="#38bdf8" fill-opacity="0.2"/><text x="169" y="89" text-anchor="middle">narrower</text>
+      <rect x="228" y="70" width="108" height="28" rx="14" fill="#38bdf8" fill-opacity="0.2"/><text x="282" y="89" text-anchor="middle">equivalent</text>
+      <rect x="20" y="108" width="112" height="28" rx="14" fill="#38bdf8" fill-opacity="0.2"/><text x="76" y="127" text-anchor="middle">associated</text>
+    </g>
+    <text class="t d" x="20" y="160" fill="#94a3b8">hierarchy is transitive · A(c_i,c_j) ∈ [0,1] is kept separate</text>
+  </g>
+  <g transform="translate(470,28)">
+    <rect width="400" height="174" rx="14" fill="#f59e0b" fill-opacity="0.08" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text class="t h" x="20" y="30" fill="#fbbf24">R<tspan font-size="11" dy="4">emp</tspan><tspan dy="-4"> · EMPIRICAL</tspan></text>
+    <text class="t d" x="20" y="52" fill="#cbd5e1">observed from collaborative use · evidence, not assertion</text>
+    <g class="t r" fill="#fef3c7">
+      <rect x="20" y="70" width="116" height="28" rx="14" fill="#f59e0b" fill-opacity="0.2"/><text x="78" y="89" text-anchor="middle">coUsedWith</text>
+      <rect x="146" y="70" width="90" height="28" rx="14" fill="#f59e0b" fill-opacity="0.2"/><text x="191" y="89" text-anchor="middle">usedFor</text>
+      <rect x="246" y="70" width="104" height="28" rx="14" fill="#f59e0b" fill-opacity="0.2"/><text x="298" y="89" text-anchor="middle">createdBy</text>
+    </g>
+    <text class="t d" x="20" y="130" fill="#94a3b8">weights: Jaccard · PMI · B(x,y) = P(y|x) − P(x|y)</text>
+    <text class="t d" x="20" y="160" fill="#94a3b8">B ≫ 0 → evidence x is narrower than y</text>
+  </g>
+</svg>

@@ -1,6 +1,11 @@
 # TagSynapse Formal Tag Model
 
+**Status:** Living formal specification
+**Last updated:** November 2026
+
 This document specifies the formal model underlying **TagSynapse**: its vocabularies, Tag Knowledge Graph, relation semantics, semantic candidate generation, graph learning, collaborative evidence, vocabulary evolution, and relational retrieval.
+
+Where a section has a direct implementation it is noted inline: §7 and §11 are `tagsynapse/usage.py`; §2's relation classes are `tagsynapse/relations.py`; §23's conditions are the study design in `EVALUATION.md`.
 
 ---
 
@@ -51,6 +56,8 @@ A folksonomic tag can therefore participate in the knowledge structure without b
 ---
 
 ## 2. Tag Knowledge Graph
+
+<p align="center"><img src="assets/relations.svg" alt="Ontological vs empirical relation classes" width="88%"></p>
 
 At time `t`:
 
@@ -790,6 +797,8 @@ uncertain relation ───→ human review
 
 ## 18. Graph Update
 
+<p align="center"><img src="assets/loop.svg" alt="The feedback loop from G(t) to G(t+1)" width="88%"></p>
+
 For a validated new controlled concept `f`:
 
 ```math
@@ -1003,6 +1012,8 @@ If a folksonomic tag is connected to a controlled concept, retrieval can travers
 ---
 
 ## 23. Experimental Decomposition
+
+<p align="center"><img src="assets/conditions.svg" alt="Nested experimental conditions" width="88%"></p>
 
 The architecture supports three principal assistance conditions.
 

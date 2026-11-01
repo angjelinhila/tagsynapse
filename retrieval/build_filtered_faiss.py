@@ -7,7 +7,7 @@ Goal:
 - Build a lean corpus table (CSV + Parquet).
 - Build a 384-dim FAISS index using MiniLM (cosine via inner product).
 
-Inputs per subreddit (under BASE_DIR):
+Inputs per subreddit (under config.RAW_JSONL_DIR):
   artificial_filtered_output.jsonl
   artificialint_filtered_output.jsonl
   chatgpt_filtered_output.jsonl
@@ -15,14 +15,14 @@ Inputs per subreddit (under BASE_DIR):
   singularity_filtered_output.jsonl
   transhumanism_filtered_output.jsonl
 
-Outputs per subreddit (under OUT_DIR):
+Outputs per subreddit (under config.INDEX_DIR):
   <name>_filtered_output_corpus.csv
   <name>_filtered_output_corpus.parquet
   <name>_filtered_output_faiss.index
 """
 
 import json
-import os
+import sys
 from pathlib import Path
 
 import faiss
@@ -30,10 +30,13 @@ import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-# ---------- CONFIG ----------
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root -> `tagsynapse` importable
+from tagsynapse import config
 
-# Base directory on TACC where your filtered JSONLs live
-BASE_DIR = Path("/work/10481/angjelinhila8932/Reddit_Project")
+# ---------- CONFIG ----------
+# Where the *_filtered_output.jsonl files live. Set TAGSYNAPSE_RAW_JSONL_DIR
+# (e.g. to a TACC allocation) - default is <DATA_DIR>/raw.
+BASE_DIR = config.RAW_JSONL_DIR
 
 INPUT_FILES = {
     "artificial": "artificial_filtered_output.jsonl",
@@ -44,12 +47,13 @@ INPUT_FILES = {
     "transhumanism": "transhumanism_filtered_output.jsonl",
 }
 
-# Where to write the corpus + FAISS artifacts
-OUT_DIR = BASE_DIR / "Filtered_FAISS"
+# Where to write the corpus + FAISS artifacts - the same dir the app and the
+# faiss-service read from.
+OUT_DIR = config.INDEX_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Lighter embedding model (384-d) to stay RAM-friendly on Lightsail later
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+# Lighter embedding model (384-d) to stay RAM-friendly on a small box
+MODEL_NAME = config.EMBEDDING_MODEL_NAME
 
 
 # ---------- HELPERS ----------

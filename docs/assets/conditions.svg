@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" width="900" height="330" role="img" aria-label="Experimental conditions nest: M0 manual tagging, M1 adds semantic candidates, M2 adds graph candidates and relational inference, M3 adds concept admission and vocabulary evolution">
+  <style>.t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.m{font-size:22px;font-weight:800}.d{font-size:13px}.delta{font-size:13px;font-weight:600}</style>
+  <rect width="900" height="330" rx="18" fill="#0f172a"/>
+  <!-- nested rounded rects, left-anchored -->
+  <g transform="translate(40,40)">
+    <rect width="820" height="250" rx="18" fill="#34d399" fill-opacity="0.07" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text class="t m" x="20" y="34" fill="#6ee7b7">M<tspan font-size="14" dy="5">3</tspan></text>
+    <text class="t d" x="66" y="34" fill="#a7f3d0">+ concept admission · vocabulary evolution</text>
+
+    <rect x="20" y="52" width="780" height="178" rx="16" fill="#a78bfa" fill-opacity="0.09" stroke="#a78bfa" stroke-width="1.5"/>
+    <text class="t m" x="40" y="86" fill="#c4b5fd">M<tspan font-size="14" dy="5">2</tspan></text>
+    <text class="t d" x="86" y="86" fill="#ddd6fe">+ C<tspan font-size="10" dy="4">graph</tspan><tspan dy="-4"> · KG expansion · GNN ranking · relational inference</tspan></text>
+
+    <rect x="40" y="104" width="740" height="106" rx="14" fill="#38bdf8" fill-opacity="0.1" stroke="#38bdf8" stroke-width="1.5"/>
+    <text class="t m" x="60" y="138" fill="#7dd3fc">M<tspan font-size="14" dy="5">1</tspan></text>
+    <text class="t d" x="106" y="138" fill="#bae6fd">+ C<tspan font-size="10" dy="4">sem</tspan><tspan dy="-4"> · embedding-based candidate concepts</tspan></text>
+
+    <rect x="60" y="156" width="700" height="38" rx="12" fill="#f59e0b" fill-opacity="0.14" stroke="#f59e0b" stroke-width="1.5"/>
+    <text class="t m" x="80" y="183" fill="#fbbf24">M<tspan font-size="14" dy="5">0</tspan></text>
+    <text class="t d" x="126" y="183" fill="#fde68a">manual tagging · no algorithmic recommendation</text>
+  </g>
+  <!-- deltas -->
+  <g class="t delta" transform="translate(40,308)" fill="#94a3b8">
+    <text x="0" y="0">M<tspan font-size="10" dy="3">0</tspan><tspan dy="-3">→M</tspan><tspan font-size="10" dy="3">1</tspan><tspan dy="-3"> = value of semantic mediation</tspan></text>
+    <text x="330" y="0">M<tspan font-size="10" dy="3">1</tspan><tspan dy="-3">→M</tspan><tspan font-size="10" dy="3">2</tspan><tspan dy="-3"> = value of graph structure</tspan></text>
+    <text x="620" y="0">M<tspan font-size="10" dy="3">2</tspan><tspan dy="-3">→M</tspan><tspan font-size="10" dy="3">3</tspan><tspan dy="-3"> = value of evolution</tspan></text>
+  </g>
+</svg>

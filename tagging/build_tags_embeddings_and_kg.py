@@ -16,17 +16,17 @@ Outputs:
 
 from pathlib import Path
 import argparse
-import json  # only if you later want a JSON mapping; not strictly needed
+import sys
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root -> `tagsynapse` importable
+from tagsynapse import config
 
-DEFAULT_TAGGING_DIR = Path(
-    "/Users/angjelin/Library/CloudStorage/Box-Box/Reddit Vector DB/faiss/Tagging Pipeline"
-)
-
-DEFAULT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+# Defaults come from tagsynapse/config.py; both are still overridable on the CLI.
+DEFAULT_TAGGING_DIR = config.TAG_DATA_DIR
+DEFAULT_MODEL_NAME = config.EMBEDDING_MODEL_NAME
 
 
 def load_vocab(vocab_path: Path) -> pd.DataFrame:

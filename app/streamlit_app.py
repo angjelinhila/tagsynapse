@@ -1,9 +1,23 @@
-import os
+"""TagSynapse Streamlit interface.
+
+Thin UI layer: corpus browsing, semantic + lexical search, tagging with
+controlled-vocabulary and KG-mediated suggestions, and vocabulary analytics.
+Every path and knob comes from tagsynapse.config; every bit of logic that
+doesn't need Streamlit lives in the tagsynapse package so it can be tested
+without a corpus or a GPU.
+
+    streamlit run app/streamlit_app.py
+"""
 import re
+import sys
 import json
 from collections import Counter, defaultdict
 from itertools import combinations
 from pathlib import Path
+
+# `streamlit run app/streamlit_app.py` puts app/ on sys.path, not the repo
+# root - make the package importable regardless of CWD.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
 import pandas as pd
@@ -18,151 +32,51 @@ import networkx as nx
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# ============================================================
-# CONFIG
-# ============================================================
-
-FAISS_API_URL = "http://127.0.0.1:5000/search"
-
-SUBREDDIT_CONFIG = {
-    "artificial_filtered": {
-        "label": "r/artificial – filtered propositions",
-        "corpus_candidates": [
-            "faiss/index/artificial_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/artificial_filtered_output_corpus_with_topics.csv",
-            "faiss/index/artificial_filtered_output_corpus.csv",
-            "faiss/index/filtered_index/artificial_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/filtered_index/artificial_filtered_output_corpus_with_topics.csv",
-            "faiss/index/filtered_index/artificial_filtered_output_corpus.csv",
-        ],
-    },
-    "artificialint_filtered": {
-        "label": "r/artificialintelligence – filtered propositions",
-        "corpus_candidates": [
-            "faiss/index/artificialint_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/artificialint_filtered_output_corpus_with_topics.csv",
-            "faiss/index/artificialint_filtered_output_corpus.csv",
-            "faiss/index/filtered_index/artificialint_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/filtered_index/artificialint_filtered_output_corpus_with_topics.csv",
-            "faiss/index/filtered_index/artificialint_filtered_output_corpus.csv",
-        ],
-    },
-    "singularity_filtered": {
-        "label": "r/singularity – filtered propositions",
-        "corpus_candidates": [
-            "faiss/index/singularity_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/singularity_filtered_output_corpus_with_topics.csv",
-            "faiss/index/singularity_filtered_output_corpus.csv",
-            "faiss/index/filtered_index/singularity_filtered_output_corpus_with_topics_labeled.csv",
-            "faiss/index/filtered_index/singularity_filtered_output_corpus_with_topics.csv",
-            "faiss/index/filtered_index/singularity_filtered_output_corpus.csv",
-        ],
-    },
-}
-
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-
-STOPWORDS = {
-    "the", "and", "for", "that", "with", "this", "you", "are", "was", "were",
-    "but", "not", "have", "has", "had", "can", "could", "will", "would",
-    "about", "from", "they", "them", "their", "there", "here", "into",
-    "your", "our", "out", "one", "two", "three", "four", "five",
-    "what", "when", "where", "why", "how", "who", "which", "also",
-    "just", "like", "more", "some", "any", "all", "because", "than",
-    "get", "got", "make", "made", "being", "been", "even", "much",
-    "very", "such", "over", "under", "up", "down", "in", "on", "of", "to",
-}
-
-TFIDF_MAX_FEATURES = 5000
-TFIDF_MAX_DOCS = 100_000
-BM25_MAX_DOCS = 100_000
+from tagsynapse import config, store
+from tagsynapse.relations import relation_bucket as _relation_bucket
+from tagsynapse.text import STOPWORDS, normalize_rows as _normalize_matrix, tokenize as tokenize_query
 
 # ============================================================
-# PATHS
+# CONFIG - all values live in tagsynapse/config.py; aliased here so the
+# rest of this file reads the same as before the extraction.
 # ============================================================
 
-BASE_DIR = Path(__file__).resolve().parent
-TAG_DATA_DIR = BASE_DIR / "faiss" / "tagging"
+FAISS_API_URL = config.FAISS_API_URL
+SUBREDDIT_CONFIG = config.SUBREDDIT_CONFIG
+EMBEDDING_MODEL_NAME = config.EMBEDDING_MODEL_NAME
+TFIDF_MAX_FEATURES = config.TFIDF_MAX_FEATURES
+TFIDF_MAX_DOCS = config.TFIDF_MAX_DOCS
+BM25_MAX_DOCS = config.BM25_MAX_DOCS
+
+INDEX_DIR = config.INDEX_DIR
+TAG_DATA_DIR = config.TAG_DATA_DIR
 TAG_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-USER_TAGS_PATH = TAG_DATA_DIR / "user_tags.csv"
-TAG_ASSIGN_PATH = TAG_DATA_DIR / "user_tag_assignments.csv"
-
-TAG_VOCAB_PATH = TAG_DATA_DIR / "tags_vocab_cat.csv"
-TAG_VOCAB_INDEX_PATH = TAG_DATA_DIR / "tags_vocab_index.csv"
-TAG_VOCAB_EMB_PATH = TAG_DATA_DIR / "tags_vocab_embeddings.npy"
-KG_EDGES_INDEX_PATH = TAG_DATA_DIR / "kg_edges_index.csv"
-TAG_EDGES_CAT_PATH = TAG_DATA_DIR / "tags_edges_cat.csv"
-
-TAG_CANON_LOG_PATH = TAG_DATA_DIR / "tag_canonicalization_events.csv"
-TAG_COOCCUR_PATH = TAG_DATA_DIR / "tag_cooccurrence_edges.csv"
-USED_NODES_PATH = TAG_DATA_DIR / "used_tag_nodes.csv"
-USED_EDGES_PATH = TAG_DATA_DIR / "used_tag_edges.csv"
-TAG_GNN_PRED_PATH = TAG_DATA_DIR / "gnn_tag_predictions.csv"
-
-USER_TAG_EMB_PATH = TAG_DATA_DIR / "user_tag_embeddings.npy"
-TAG_CENTRALITY_PATH = TAG_DATA_DIR / "tag_centrality_scores.csv"
-HYBRID_GRAPH_PATH = TAG_DATA_DIR / "hybrid_tag_graph_edges.csv"
+USER_TAGS_PATH = config.USER_TAGS_PATH
+TAG_ASSIGN_PATH = config.TAG_ASSIGN_PATH
+TAG_VOCAB_PATH = config.TAG_VOCAB_PATH
+TAG_VOCAB_INDEX_PATH = config.TAG_VOCAB_INDEX_PATH
+TAG_VOCAB_EMB_PATH = config.TAG_VOCAB_EMB_PATH
+KG_EDGES_INDEX_PATH = config.KG_EDGES_INDEX_PATH
+TAG_EDGES_CAT_PATH = config.TAG_EDGES_CAT_PATH
+TAG_CANON_LOG_PATH = config.TAG_CANON_LOG_PATH
+TAG_COOCCUR_PATH = config.TAG_COOCCUR_PATH
+USED_NODES_PATH = config.USED_NODES_PATH
+USED_EDGES_PATH = config.USED_EDGES_PATH
+TAG_GNN_PRED_PATH = config.TAG_GNN_PRED_PATH
+USER_TAG_EMB_PATH = config.USER_TAG_EMB_PATH
+TAG_CENTRALITY_PATH = config.TAG_CENTRALITY_PATH
+HYBRID_GRAPH_PATH = config.HYBRID_GRAPH_PATH
 
 # ============================================================
 # TAG STORAGE
 # ============================================================
 
-def load_user_tags() -> pd.DataFrame:
-    if USER_TAGS_PATH.exists():
-        df = pd.read_csv(USER_TAGS_PATH)
-    else:
-        df = pd.DataFrame(columns=["tag_id", "tag_label", "parent_tag_label"])
-
-    if "tag_id" not in df.columns:
-        df = df.reset_index().rename(columns={"index": "tag_id"})
-    if "parent_tag_label" not in df.columns:
-        df["parent_tag_label"] = ""
-
-    if not df.empty:
-        df["tag_id"] = pd.to_numeric(df["tag_id"], errors="coerce").fillna(0).astype("int32")
-        df["tag_label"] = df["tag_label"].astype(str)
-        df["parent_tag_label"] = df["parent_tag_label"].fillna("").astype(str)
-
-    return df
-
-
-def save_user_tags(df: pd.DataFrame) -> None:
-    df = df.copy()
-    if "tag_id" not in df.columns:
-        df = df.reset_index().rename(columns={"index": "tag_id"})
-    df.to_csv(USER_TAGS_PATH, index=False)
-
-
-def load_tag_assignments() -> pd.DataFrame:
-    if TAG_ASSIGN_PATH.exists():
-        df = pd.read_csv(TAG_ASSIGN_PATH)
-    else:
-        df = pd.DataFrame(
-            columns=["subreddit_key", "corpus_path", "doc_id", "row_id", "tag_label"]
-        )
-
-    if not df.empty:
-        df["subreddit_key"] = df["subreddit_key"].astype(str)
-        df["corpus_path"] = df["corpus_path"].astype(str)
-        df["tag_label"] = df["tag_label"].astype(str)
-        df["row_id"] = pd.to_numeric(df["row_id"], errors="coerce").fillna(-1).astype("int64")
-
-    return df
-
-
-def save_tag_assignments(df: pd.DataFrame) -> None:
-    df = df.copy()
-    df.to_csv(TAG_ASSIGN_PATH, index=False)
-
-
-def _next_tag_id(tags_df: pd.DataFrame) -> int:
-    if tags_df.empty or "tag_id" not in tags_df.columns:
-        return 0
-    try:
-        return int(tags_df["tag_id"].max()) + 1
-    except Exception:
-        return len(tags_df)
+load_user_tags = store.load_user_tags
+save_user_tags = store.save_user_tags
+load_tag_assignments = store.load_tag_assignments
+save_tag_assignments = store.save_tag_assignments
+_next_tag_id = store.next_tag_id
 
 
 def get_tags_for_doc(subreddit_key: str, corpus_path: str, row_id: int):
@@ -430,11 +344,6 @@ def load_controlled_vocab_and_kg():
     return vocab_df, vocab_emb, kg_edges_df
 
 
-def _normalize_matrix(mat: np.ndarray) -> np.ndarray:
-    norms = np.linalg.norm(mat, axis=1, keepdims=True)
-    return mat / (norms + 1e-8)
-
-
 def suggest_tags_for_text(
     text: str,
     model,
@@ -497,27 +406,8 @@ def get_kg_neighbors(tag_label: str, kg_edges_df: pd.DataFrame | None):
 # CANONICALIZATION / RELATION LOGGING
 # ============================================================
 
-def load_canonicalization_events() -> pd.DataFrame:
-    if TAG_CANON_LOG_PATH.exists():
-        try:
-            return pd.read_csv(TAG_CANON_LOG_PATH)
-        except Exception:
-            pass
-    return pd.DataFrame(
-        columns=[
-            "original_label", "canonical_label", "similarity",
-            "subreddit_key", "corpus_path", "row_id", "timestamp"
-        ]
-    )
-
-
-def append_canonicalization_events(rows: list[dict]) -> None:
-    if not rows:
-        return
-    old = load_canonicalization_events()
-    new = pd.DataFrame(rows)
-    out = pd.concat([old, new], ignore_index=True)
-    out.to_csv(TAG_CANON_LOG_PATH, index=False)
+load_canonicalization_events = store.load_canonicalization_events
+append_canonicalization_events = store.append_canonicalization_events
 
 
 def canonicalize_input_labels_detailed(
@@ -732,19 +622,6 @@ def suggest_tags_for_typed_label(
 # ============================================================
 # HYBRID GRAPH HELPERS
 # ============================================================
-
-def _relation_bucket(rel: str) -> str:
-    r = str(rel).lower()
-    if "equiv" in r or "canon" in r or "alias" in r or "same" in r:
-        return "equivalence"
-    if "broad" in r or "parent" in r or "super" in r:
-        return "broader"
-    if "narrow" in r or "child" in r or "sub" in r:
-        return "narrower"
-    if "cooccur" in r:
-        return "cooccurs_with"
-    return "related"
-
 
 def expand_tags_via_kg(selected_tags: list[str], kg_edges_df: pd.DataFrame, allowed_buckets: list[str]) -> tuple[set[str], dict[str, list[str]]]:
     if kg_edges_df is None or kg_edges_df.empty or not selected_tags:
@@ -1193,10 +1070,15 @@ def render_cytoscape_graph(nodes_df: pd.DataFrame, edges_df: pd.DataFrame, centr
 # ============================================================
 
 def _resolve_corpus_path(candidates):
+    """First existing corpus file. Candidates are relative to config.INDEX_DIR;
+    absolute paths and legacy CWD-relative paths are honoured too."""
     for p in candidates:
-        if os.path.exists(p):
-            return p
-    raise FileNotFoundError(f"None of the corpus paths exist: {candidates}")
+        for cand in (INDEX_DIR / p, Path(p)):
+            if cand.exists():
+                return str(cand)
+    raise FileNotFoundError(
+        f"None of the corpus paths exist under {INDEX_DIR}: {candidates}"
+    )
 
 
 @st.cache_resource
@@ -1593,12 +1475,6 @@ def build_rag_context(df: pd.DataFrame, indices, max_chars=3000):
 # ============================================================
 # LEXICAL HELPERS
 # ============================================================
-
-def tokenize_query(text: str):
-    toks = re.findall(r"[a-z0-9_]+", text.lower())
-    toks = [t for t in toks if t not in STOPWORDS and len(t) > 2]
-    return toks
-
 
 def bm25_search(query: str, bm25_index, k: int = 20):
     if bm25_index is None:
@@ -2812,11 +2688,12 @@ def tab_analytics(df: pd.DataFrame):
 
 def main():
     st.set_page_config(
-        page_title="Reddit AI Vector DB – filtered corpora",
+        page_title="TagSynapse",
         layout="wide",
     )
 
-    st.title("Reddit AI Vector DB – filtered corpora")
+    st.title("TagSynapse")
+    st.caption("Structure without vocabulary homogenization - semantic + graph-mediated tagging over filtered Reddit corpora.")
 
     with st.sidebar:
         st.markdown("### Corpus selection")
@@ -2839,7 +2716,7 @@ def main():
         except FileNotFoundError:
             st.error(
                 f"Corpus files for **{cfg['label']}** not found on server.\n\n"
-                "Expected one of:\n"
+                f"Expected one of (under `{INDEX_DIR}`, set TAGSYNAPSE_DATA_DIR to change):\n"
                 + "\n".join(f"- `{p}`" for p in cfg["corpus_candidates"])
             )
             st.stop()

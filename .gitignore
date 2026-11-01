@@ -18,9 +18,14 @@ venv/
 # Logs
 *.log
 
+# Test / tooling caches
+.pytest_cache/
+
 # Data / corpora
 *.parquet
 *.jsonl
+!eval/history/*.jsonl
+faiss/
 
 # Search indexes
 *.index

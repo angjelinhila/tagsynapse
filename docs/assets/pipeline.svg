@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 400" width="1300" height="400" role="img" aria-label="Implementation pipeline: retrieval track from filtered JSONL to FAISS service to Streamlit; tagging track from FAST vocabulary through base KG, usage enrichment, GNN, to recommendations; eval snapshots alongside">
+  <defs><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#64748b"/></marker></defs>
+  <style>.t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.h{font-size:12px;font-weight:800;letter-spacing:1.2px;fill:#64748b}.n{font-size:13.5px;font-weight:700;fill:#f8fafc}.f{font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#94a3b8}.e{stroke:#64748b;stroke-width:1.8;fill:none;marker-end:url(#p)}</style>
+  <rect width="1300" height="400" rx="18" fill="#0f172a"/>
+  <text class="t h" x="40" y="44">RETRIEVAL</text>
+  <g transform="translate(40,60)">
+    <g><rect width="190" height="64" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="26">Filtered JSONL</text><text class="t f" x="14" y="48">faiss/raw/*.jsonl</text></g>
+    <g transform="translate(230,0)"><rect width="250" height="64" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="26">Corpus + FAISS index</text><text class="t f" x="14" y="48">retrieval/build_filtered_faiss.py</text></g>
+    <g transform="translate(520,0)"><rect width="210" height="64" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="26">FAISS service</text><text class="t f" x="14" y="48">retrieval/faiss_service.py</text></g>
+    <g transform="translate(770,0)"><rect width="200" height="64" rx="10" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-width="1.5"/><text class="t n" x="14" y="26">Streamlit app</text><text class="t f" x="14" y="48">app/streamlit_app.py</text></g>
+    <path class="e" d="M190 32 L230 32"/><path class="e" d="M480 32 L520 32"/><path class="e" d="M730 32 L770 32"/>
+  </g>
+  <text class="t h" x="40" y="184">TAG KNOWLEDGE GRAPH</text>
+  <g transform="translate(40,200)">
+    <g><rect width="190" height="64" rx="10" fill="#38bdf8" fill-opacity="0.12" stroke="#38bdf8" stroke-width="1.5"/><text class="t n" x="14" y="26">FAST vocabulary</text><text class="t f" x="14" y="48">tags_vocab_cat.csv</text></g>
+    <g transform="translate(230,0)"><rect width="250" height="64" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="26">Embeddings + base KG</text><text class="t f" x="14" y="48">build_tags_embeddings_and_kg.py</text></g>
+    <g transform="translate(520,0)"><rect width="210" height="64" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="26">Full KG</text><text class="t f" x="14" y="48">build_tag_kg.py</text></g>
+    <g transform="translate(770,0)"><rect width="250" height="64" rx="10" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/><text class="t n" x="14" y="26">Usage-enriched graph</text><text class="t f" x="14" y="48">build_usage_enriched_tag_kg.py</text></g>
+    <g transform="translate(1060,0)"><rect width="180" height="64" rx="10" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-width="1.5"/><text class="t n" x="14" y="26">Tag GNN</text><text class="t f" x="14" y="48">train_light_tag_gnn.py</text></g>
+    <path class="e" d="M190 32 L230 32"/><path class="e" d="M480 32 L520 32"/><path class="e" d="M730 32 L770 32"/><path class="e" d="M1020 32 L1060 32"/>
+  </g>
+  <!-- app -> usage enrichment (user tagging state) -->
+  <path class="e" d="M880 124 L880 200" stroke-dasharray="4 4"/>
+  <text class="t f" x="890" y="166" fill="#fbbf24">user_tags.csv · user_tag_assignments.csv</text>
+  <!-- GNN -> app -->
+  <path class="e" d="M1150 200 C 1150 150, 1060 92, 970 92"/>
+  <text class="t f" x="1080" y="128" fill="#c4b5fd">gnn_tag_predictions.csv</text>
+  <text class="t h" x="40" y="324">EVALUATION</text>
+  <g transform="translate(40,340)">
+    <g><rect width="260" height="44" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="20">python -m eval.snapshot</text><text class="t f" x="14" y="36">eval/history/snapshots.jsonl</text></g>
+    <g transform="translate(300,0)"><rect width="220" height="44" rx="10" fill="#1e293b" stroke="#475569"/><text class="t n" x="14" y="20">python -m eval.report</text><text class="t f" x="14" y="36">trend across snapshots</text></g>
+    <path class="e" d="M260 22 L300 22"/>
+  </g>
+  <path class="e" d="M810 264 C 700 264, 450 300, 170 340" stroke-dasharray="4 4"/>
+  <!-- config -->
+  <g transform="translate(1090,300)"><rect width="170" height="84" rx="10" fill="#1e293b" stroke="#7dd3fc" stroke-width="1.5"/>
+    <text class="t n" x="85" y="24" text-anchor="middle">tagsynapse/config.py</text>
+    <text class="t f" x="85" y="46" text-anchor="middle">every path · every knob</text>
+    <text class="t f" x="85" y="64" text-anchor="middle" fill="#7dd3fc">TAGSYNAPSE_DATA_DIR</text>
+    <text class="t f" x="85" y="78" text-anchor="middle">read by every box here</text></g>
+</svg>

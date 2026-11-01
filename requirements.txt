@@ -1,11 +1,18 @@
-faiss-cpu
-Flask
-networkx
-numpy
-pandas
-plotly
-requests
-scikit-learn
-sentence-transformers
-streamlit
-torch
+# Core (package + eval + tests) - runs anywhere pandas does
+numpy>=1.26
+pandas>=2.0
+python-dotenv>=1.0
+pytest>=8.0
+
+# App
+streamlit>=1.35
+plotly>=5.20
+networkx>=3.2
+scikit-learn>=1.4
+requests>=2.31
+sentence-transformers>=3.0
+torch>=2.2
+
+# Retrieval build + service
+faiss-cpu>=1.8
+Flask>=3.0

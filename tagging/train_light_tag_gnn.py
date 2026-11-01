@@ -21,8 +21,12 @@ except ImportError as e:
 
 from sentence_transformers import SentenceTransformer
 
-BASE_DIR = Path("/home/ubuntu/RedditAI_Vector_DB")
-TAG_DIR = BASE_DIR / "faiss" / "tagging"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root -> `tagsynapse` importable
+from tagsynapse import config
+
+# All paths come from tagsynapse/config.py (TAGSYNAPSE_DATA_DIR overrides).
+TAG_DIR = config.TAG_DATA_DIR
 
 USED_NODES_PATH = TAG_DIR / "used_tag_nodes.csv"
 USED_EDGES_INDEX_PATH = TAG_DIR / "used_tag_edges_index.csv"
@@ -34,8 +38,8 @@ TAG_CANON_LOG_PATH = TAG_DIR / "tag_canonicalization_events.csv"
 OUT_PRED_PATH = TAG_DIR / "gnn_tag_predictions.csv"
 OUT_MODEL_PATH = TAG_DIR / "light_tag_gnn.pt"
 
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-SEED = 42
+MODEL_NAME = config.EMBEDDING_MODEL_NAME
+SEED = config.SEED
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)

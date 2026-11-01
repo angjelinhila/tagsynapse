@@ -1,12 +1,21 @@
+"""Minimal FAISS search service. Runs inside the faiss-service container
+(docker/faiss.Dockerfile) with no dependency on the rest of the repo, so the
+index path is read straight from the environment rather than from
+tagsynapse.config - keep the default here and in config.py in sync.
+
+    POST /search  {"vector": [...], "k": 5}  ->  {"indices": [[...]], "distances": [[...]]}
+"""
 import faiss
 import numpy as np
 import os
 import time
 from flask import Flask, request, jsonify
 
-# Path inside the container — comes from ./faiss/index → /mnt/faiss_index
-#FAISS_INDEX_PATH = "/mnt/faiss_index/artificial_nested_submissions_with_comments_hier_corpus_doc.index"
-FAISS_INDEX_PATH = "/mnt/faiss_index/artificial_filtered_output_faiss.index"
+# Inside the container ./faiss/index is mounted read-only at /mnt/faiss_index.
+FAISS_INDEX_PATH = os.getenv(
+    "TAGSYNAPSE_FAISS_INDEX_PATH",
+    "/mnt/faiss_index/artificial_filtered_output_faiss.index",
+)
 
 
 app = Flask(__name__)

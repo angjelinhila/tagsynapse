@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="TagSynapse architecture: folksonomic input, semantic matching against a controlled vocabulary, relation inference into a tag knowledge graph, GNN recommendations, human tagging, and usage evidence feeding back into the graph">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34d399"/></marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#f59e0b"/></marker>
+  </defs>
+  <style>
+    .t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}
+    .lbl{font-size:17px;font-weight:700;fill:#f8fafc}
+    .sub{font-size:13px;fill:#cbd5e1}
+    .band{font-size:12px;font-weight:700;letter-spacing:1.2px;fill:#64748b}
+    .edge{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#arr)}
+  </style>
+  <rect width="1200" height="520" rx="18" fill="#0f172a"/>
+  <!-- layer bands -->
+  <g class="t band">
+    <text x="40" y="52">INPUT</text><text x="330" y="52">SEMANTIC LAYER</text><text x="620" y="52">GRAPH LAYER</text><text x="920" y="52">HUMAN LOOP</text>
+  </g>
+  <g stroke="#1e293b" stroke-width="1"><line x1="300" y1="30" x2="300" y2="490"/><line x1="590" y1="30" x2="590" y2="490"/><line x1="890" y1="30" x2="890" y2="490"/></g>
+
+  <!-- INPUT: user tag + controlled vocab -->
+  <g transform="translate(40,90)">
+    <rect width="245" height="78" rx="12" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">User tag</text><text class="t sub" x="18" y="56">free text, in the user's own words</text>
+  </g>
+  <g transform="translate(40,300)">
+    <rect width="245" height="78" rx="12" fill="#38bdf8" fill-opacity="0.12" stroke="#38bdf8" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">Controlled vocabulary</text><text class="t sub" x="18" y="56">FAST subset · labels, description, facet</text>
+  </g>
+  <!-- SEMANTIC -->
+  <g transform="translate(330,195)">
+    <rect width="230" height="96" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">Semantic matching</text><text class="t sub" x="18" y="56">MiniLM 384-d · cosine · Top-K</text><text class="t sub" x="18" y="76" fill="#94a3b8">"where to look", not inference</text>
+  </g>
+  <!-- GRAPH -->
+  <g transform="translate(610,90)">
+    <rect width="265" height="78" rx="12" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">Relation inference</text><text class="t sub" x="18" y="56">broader · narrower · equivalent · associated</text>
+  </g>
+  <g transform="translate(610,220)">
+    <rect width="265" height="96" rx="12" fill="#1e293b" stroke="#7dd3fc" stroke-width="2"/>
+    <text class="t lbl" x="18" y="32">Tag Knowledge Graph</text>
+    <circle cx="36" cy="66" r="6" fill="#38bdf8"/><circle cx="60" cy="66" r="6" fill="#f59e0b"/><circle cx="84" cy="66" r="6" fill="#38bdf8"/>
+    <text class="t sub" x="102" y="71">controlled ∪ folksonomic</text>
+  </g>
+  <g transform="translate(610,370)">
+    <rect width="265" height="78" rx="12" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">Tag GNN</text><text class="t sub" x="18" y="56">R-GCN over the used subgraph</text>
+  </g>
+  <!-- HUMAN -->
+  <g transform="translate(920,160)">
+    <rect width="240" height="78" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text class="t lbl" x="18" y="32">Recommendations</text><text class="t sub" x="18" y="56">semantic ∪ graph ∪ folksonomic</text>
+  </g>
+  <g transform="translate(920,290)">
+    <rect width="240" height="78" rx="12" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-width="2"/>
+    <text class="t lbl" x="18" y="32">Human tagging</text><text class="t sub" x="18" y="56">the only step that asserts</text>
+  </g>
+  <g transform="translate(920,410)">
+    <rect width="240" height="70" rx="12" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text class="t lbl" x="18" y="30">Usage evidence</text><text class="t sub" x="18" y="52">coUsedWith · Jaccard · PMI · B(x,y)</text>
+  </g>
+
+  <!-- edges -->
+  <path class="edge" d="M285 129 C 310 129, 305 230, 330 230"/>
+  <path class="edge" d="M285 339 C 310 339, 305 256, 330 256"/>
+  <path class="edge" d="M560 230 C 585 230, 585 129, 610 129"/>
+  <path class="edge" d="M742 168 L742 220"/>
+  <path class="edge" d="M742 316 L742 370"/>
+  <path class="edge" d="M875 409 C 897 409, 897 199, 920 199"/>
+  <path class="edge" d="M875 268 C 897 268, 897 199, 920 199" stroke-dasharray="4 4"/>
+  <path d="M1040 238 L1040 290" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M1040 368 L1040 410" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <!-- feedback: usage -> KG, dashed amber -->
+  <path d="M920 452 L884 452 L884 490 L598 490 L598 268 L610 268" stroke="#f59e0b" stroke-linejoin="round" stroke-width="2" fill="none" stroke-dasharray="7 5" marker-end="url(#arrA)" opacity="0.9"/>
+  <text class="t" x="616" y="508" font-size="12" fill="#fbbf24">empirical edges · evidence, never assertion</text>
+  <!-- new tag -> relation inference -->
+  
+</svg>

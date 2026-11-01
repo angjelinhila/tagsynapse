@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" width="960" height="420" role="img" aria-label="Relation-first: a user-generated tag stays a first-class node while acquiring typed relations to controlled and folksonomic concepts">
+  <style>.t{font-family:ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.n{font-size:14px;font-weight:700}.e{font-size:12px;font-weight:600}.lg{font-size:12px;fill:#cbd5e1}</style>
+  <rect width="960" height="420" rx="18" fill="#0f172a"/>
+  <!-- edges first (under nodes) -->
+  <g stroke="#38bdf8" stroke-width="2" fill="none">
+    <line x1="480" y1="190" x2="170" y2="90"/>
+    <line x1="480" y1="190" x2="170" y2="290"/>
+    <line x1="480" y1="190" x2="790" y2="90"/>
+  </g>
+  <line x1="480" y1="190" x2="790" y2="290" stroke="#f59e0b" stroke-width="2" stroke-dasharray="7 5"/>
+  <line x1="480" y1="190" x2="480" y2="340" stroke="#a78bfa" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round"/>
+  <!-- edge labels with backing pills -->
+  <g class="t e">
+    <rect x="283" y="124" width="64" height="20" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.5"/><text x="315" y="138" text-anchor="middle" fill="#7dd3fc">broader</text>
+    <rect x="277" y="236" width="80" height="20" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.5"/><text x="317" y="250" text-anchor="middle" fill="#7dd3fc">associated</text>
+    <rect x="601" y="124" width="86" height="20" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.5"/><text x="644" y="138" text-anchor="middle" fill="#7dd3fc">equivalent ?</text>
+    <rect x="572" y="236" width="144" height="20" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-opacity="0.5"/><text x="644" y="250" text-anchor="middle" fill="#fbbf24">coUsedWith · J = 0.41</text>
+    <rect x="492" y="262" width="172" height="20" rx="10" fill="#0f172a" stroke="#a78bfa" stroke-opacity="0.5"/><text x="578" y="276" text-anchor="middle" fill="#c4b5fd">semantic neighbor · cos 0.78</text>
+  </g>
+  <!-- center node -->
+  <g transform="translate(480,190)">
+    <circle r="56" fill="#1c1917" stroke="#f59e0b" stroke-width="2.5"/>
+    <text class="t n" text-anchor="middle" y="-3" font-size="15" fill="#fbbf24">"agentic ai"</text>
+    <text class="t" text-anchor="middle" y="16" font-size="10" fill="#fcd34d">user-generated tag</text>
+  </g>
+  <!-- neighbor nodes: 200 wide -->
+  <g class="t n">
+    <g transform="translate(170,90)"><rect x="-100" y="-22" width="200" height="44" rx="22" fill="#0c2a3d" stroke="#38bdf8" stroke-width="1.5"/><text text-anchor="middle" y="5" fill="#7dd3fc">Artificial intelligence</text></g>
+    <g transform="translate(170,290)"><rect x="-100" y="-22" width="200" height="44" rx="22" fill="#0c2a3d" stroke="#38bdf8" stroke-width="1.5"/><text text-anchor="middle" y="5" fill="#7dd3fc">Multiagent systems</text></g>
+    <g transform="translate(790,90)"><rect x="-100" y="-22" width="200" height="44" rx="22" fill="#0c2a3d" stroke="#38bdf8" stroke-width="1.5"/><text text-anchor="middle" y="5" fill="#7dd3fc">Intelligent agents</text></g>
+    <g transform="translate(790,290)"><rect x="-100" y="-22" width="200" height="44" rx="22" fill="#1c1917" stroke="#f59e0b" stroke-width="1.5"/><text text-anchor="middle" y="5" fill="#fbbf24">"tool use"</text></g>
+    <g transform="translate(480,340)"><rect x="-100" y="-22" width="200" height="44" rx="22" fill="#1e1b4b" stroke="#a78bfa" stroke-width="1.5"/><text text-anchor="middle" y="5" fill="#c4b5fd">Autonomous agents</text></g>
+  </g>
+  <!-- legend -->
+  <g class="t lg" transform="translate(30,392)">
+    <line x1="0" y1="-4" x2="26" y2="-4" stroke="#38bdf8" stroke-width="2"/><text x="32" y="0">ontological · asserted / validated</text>
+    <line x1="240" y1="-4" x2="266" y2="-4" stroke="#f59e0b" stroke-width="2" stroke-dasharray="7 5"/><text x="272" y="0">empirical · observed</text>
+    <line x1="420" y1="-4" x2="446" y2="-4" stroke="#a78bfa" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round"/><text x="452" y="0">semantic · candidate only</text>
+    <text x="900" y="0" text-anchor="end" fill="#64748b">"?" = proposed, awaiting a human or g_φ</text>
+  </g>
+</svg>

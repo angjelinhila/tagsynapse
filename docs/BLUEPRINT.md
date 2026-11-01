@@ -1,5 +1,8 @@
 # TagSynapse: Project Blueprint
 
+**Status:** Living design doc
+**Last updated:** November 2026
+
 **TagSynapse** is a human-in-the-loop collaborative tagging system that connects open folksonomic vocabulary with a controlled vocabulary through semantic representations, a **Tag Knowledge Graph (TKG)**, graph learning, and collaborative use.
 
 For the full mathematical specification, see [TAG_MODEL.md](TAG_MODEL.md).
@@ -46,6 +49,8 @@ A folksonomic tag can participate in the TKG without becoming a controlled conce
 ---
 
 ## 3. System Architecture
+
+<p align="center"><img src="assets/architecture.svg" alt="TagSynapse architecture" width="100%"></p>
 
 ```mermaid
 flowchart LR
@@ -98,6 +103,8 @@ No single model is responsible for all five.
 
 ## 4. Relation-First Organization
 
+<p align="center"><img src="assets/relation-first.svg" alt="A user tag with typed relations to controlled and folksonomic neighbours" width="88%"></p>
+
 TagSynapse is **relation-first rather than canonicalization-first**.
 
 A new user tag is not automatically replaced because a similar controlled term exists. Instead, it can remain available while acquiring relationships to controlled or folksonomic concepts.
@@ -120,6 +127,8 @@ A concept may originate as a user-generated tag and later become structurally st
 ---
 
 ## 5. Relation Model
+
+<p align="center"><img src="assets/relations.svg" alt="Ontological vs empirical relation classes" width="88%"></p>
 
 TagSynapse distinguishes formal conceptual structure from observed collaborative behavior.
 
@@ -317,6 +326,8 @@ This allows emergent terminology to remain useful while evidence accumulates abo
 
 ## 11. Graph Evolution
 
+<p align="center"><img src="assets/loop.svg" alt="The feedback loop from G(t) to G(t+1)" width="88%"></p>
+
 Validated interaction contributes a graph update:
 
 ```math
@@ -385,57 +396,31 @@ The dense retrieval layer uses:
 
 ## 13. Implementation Pipeline
 
-### Retrieval pipeline
-
-```text
-filtered information objects
-        ↓
-MiniLM embeddings
-        ↓
-FAISS index
-        ↓
-FAISS service
-        ↓
-Streamlit interface
-```
-
-### Tagging pipeline
-
-```text
-FAST-derived controlled vocabulary
-        ↓
-controlled-tag embeddings
-        ↓
-base Tag Knowledge Graph
-        +
-user tags
-        +
-tag assignments
-        ↓
-usage-enriched graph
-        ↓
-Tag GNN
-        ↓
-graph-mediated recommendations
-```
+<p align="center"><img src="assets/pipeline.svg" alt="Retrieval, tag-knowledge-graph and evaluation pipelines" width="100%"></p>
 
 ### Core source files
 
 | File | Role |
 |---|---|
-| `app/streamlit_app.py` | Interactive retrieval, tagging, and graph interface |
+| `tagsynapse/config.py` | Every path and knob; `TAGSYNAPSE_DATA_DIR` overrides the data root. No script hardcodes a machine-specific path |
+| `tagsynapse/relations.py` | $\mathcal{R}_{\mathrm{ont}}$ / $\mathcal{R}_{\mathrm{emp}}$ vocabulary and raw-relation bucketing |
+| `tagsynapse/usage.py` | Co-use counts, Jaccard, PMI, behavioral subsumption (`TAG_MODEL.md` §7, §11) |
+| `app/streamlit_app.py` | Interactive retrieval, tagging, and graph interface — a thin layer over the package |
 | `retrieval/build_filtered_faiss.py` | Builds MiniLM proposition corpora and FAISS indexes |
 | `retrieval/faiss_service.py` | Serves dense FAISS retrieval |
 | `tagging/build_tags_embeddings_and_kg.py` | Embeds the controlled vocabulary and indexes its relations |
 | `tagging/build_tag_kg.py` | Builds the base Tag Knowledge Graph |
 | `tagging/build_usage_enriched_tag_kg.py` | Adds usage, semantic, co-occurrence, and structural information |
 | `tagging/train_light_tag_gnn.py` | Learns graph-mediated controlled-tag anchor predictions |
+| `eval/metrics.py`, `eval/snapshot.py`, `eval/report.py` | Vocabulary-state metrics and snapshot history — see `EVALUATION.md` |
 
 ---
 
 ## 14. Experimental Model
 
-The architecture supports three principal tagging conditions.
+The architecture supports cumulative tagging conditions, so each delta isolates one layer.
+
+<p align="center"><img src="assets/conditions.svg" alt="Nested experimental conditions" width="88%"></p>
 
 | Model | Assistance |
 |---|---|
@@ -467,7 +452,9 @@ M_1
 C_{\mathrm{graph}}
 ```
 
-This separates the contribution of semantic mediation from the additional contribution of graph structure.
+This separates the contribution of semantic mediation from the additional contribution of graph structure. `TAG_MODEL.md` §23 adds a fourth condition, $M_3$, for adaptive vocabulary evolution.
+
+The full evaluation framework — every metric, which are computable today from the tagging logs vs. blocked on the study, and the snapshot-history mechanism — lives in **[`EVALUATION.md`](EVALUATION.md)**, since it changes faster than this document.
 
 ---
 
